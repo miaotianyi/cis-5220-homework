@@ -36,7 +36,7 @@ class LinearRegression:
         # model.fit(X, y)
         # self.b, self.w = model.intercept_, model.coef_
         # return
-        X = self._add_ones_column(X)    # add column of 1s for bias
+        X = self._add_ones_column(X)  # add column of 1s for bias
         w = np.linalg.pinv(X.T @ X) @ (X.T @ y)
         self.b, self.w = w[0], w[1:]
 
@@ -58,8 +58,9 @@ class GradientDescentLinearRegression(LinearRegression):
     A linear regression model that uses gradient descent to fit the model.
     """
 
-    def fit(self, X: np.ndarray, y: np.ndarray,
-            lr: float = 0.01, epochs: int = 1000) -> None:
+    def fit(
+        self, X: np.ndarray, y: np.ndarray, lr: float = 0.01, epochs: int = 1000
+    ) -> None:
         """
         Fit a linear regression model using gradient descent.
 
@@ -89,6 +90,7 @@ class GradientDescentLinearRegression(LinearRegression):
         # 1/2 is there to simplify computation
         # dJ/dy_hat = 1/n * 1/2 * 2 * (y_hat - y) = 1/n * (y_hat - y)
         # dy_hat/dw = X
+        # dJ/dw = dJ/dy_hat * dy_hat/dw = 1/n * (y_hat - y) @ X
 
         # losses = []
 
@@ -103,17 +105,3 @@ class GradientDescentLinearRegression(LinearRegression):
         # plt.plot(np.log(losses))
         # plt.show()
         self.b, self.w = w[0], w[1:]
-
-    # def predict(self, X) -> np.ndarray:
-    #     return super(GradientDescentLinearRegression, self).predict(X)
-
-
-# m1 = LinearRegression()
-# m2 = GradientDescentLinearRegression()
-# x = np.random.rand(100, 5)
-# y = x @ np.arange(5)
-# m1.fit(x, y)
-# m2.fit(x, y, lr=0.2, epochs=10**3)
-# print(m1.w, m1.b)
-# print(m2.w, m2.b)
-
