@@ -31,12 +31,16 @@ class MLP(nn.Module):
         self.activation = activation
         self.initializer = initializer
 
-        layer_widths = [self.input_size] + [self.hidden_size] * self.hidden_count + [self.num_classes]
+        layer_widths = (
+            [self.input_size]
+            + [self.hidden_size] * self.hidden_count
+            + [self.num_classes]
+        )
         layer_list = []
         for fan_in, fan_out in zip(layer_widths, layer_widths[1:]):
             layer_list.append(nn.Linear(fan_in, fan_out, bias=True))
             layer_list.append(self.activation())
-        layer_list = layer_list[:-1]    # drop last activation
+        layer_list = layer_list[:-1]  # drop last activation
         self.net = nn.Sequential(*layer_list)
 
     def weight_init(self, m):
