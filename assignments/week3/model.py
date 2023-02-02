@@ -42,6 +42,7 @@ class MLP(nn.Module):
             layer_list.append(self.activation())
         layer_list = layer_list[:-1]  # drop last activation
         self.net = nn.Sequential(*layer_list)
+        self.apply(self.weight_init)
 
     def weight_init(self, m):
         if isinstance(m, nn.Linear):
