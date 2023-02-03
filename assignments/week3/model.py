@@ -4,6 +4,9 @@ from typing import Callable
 
 
 class MLP(nn.Module):
+    """
+    A simple MLP with customizable hidden sizes, activation, and initialization.
+    """
     def __init__(
         self,
         input_size: int,
@@ -44,12 +47,22 @@ class MLP(nn.Module):
         self.net = nn.Sequential(*layer_list)
         self.apply(self.weight_init)
 
-    def weight_init(self, m):
+    def weight_init(self, m: nn.Module) -> None:
+        """
+        Initialize the weights (not bias) of a linear layer by custom method.
+
+        Bias is initialized to 0.
+
+        Parameters
+        ----------
+        m : nn.Module
+        """
         if isinstance(m, nn.Linear):
             with torch.no_grad():
                 self.initializer(m.weight.data)
+                nn.init.zeros_(m.bias.data)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of the network.
 
