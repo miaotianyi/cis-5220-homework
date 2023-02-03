@@ -7,6 +7,7 @@ class MLP(nn.Module):
     """
     A simple MLP with customizable hidden sizes, activation, and initialization.
     """
+
     def __init__(
         self,
         input_size: int,
