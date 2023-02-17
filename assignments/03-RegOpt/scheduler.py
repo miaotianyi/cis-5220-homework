@@ -173,9 +173,9 @@ class MyStepLR(_LRScheduler):
         """
         Create a new StepLR scheduler.
         """
-        self.step_size = 20
+        self.step_size = 5
         self.gamma = 0.9
-        self.initial_rate = 1.5
+        self.initial_rate = 1.0
         super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -193,7 +193,7 @@ class MyStepLR(_LRScheduler):
         return [base_lr * decay_factor for base_lr in self.base_lrs]
 
 
-class CustomLRScheduler(MyCosineAnnealing):
+class CustomLRScheduler(MyStepLR):
     """
     Custom LR Scheduler
     """
