@@ -104,11 +104,6 @@ class MyCosineAnnealing(_LRScheduler):
     """
     Custom LR Scheduler using closed-form cosine annealing
     with warm restarts.
-
-    For some reason, this scheduler performs much worse than baseline
-    on the test set.
-    It's strange because even the official cosine annealing algorithm
-    by PyTorch performs poorly.
     """
 
     def __init__(self, optimizer, last_epoch=-1):
@@ -198,7 +193,7 @@ class MyStepLR(_LRScheduler):
         return [base_lr * decay_factor for base_lr in self.base_lrs]
 
 
-class CustomLRScheduler(MyStepLR):
+class CustomLRScheduler(MyCosineAnnealing):
     """
     Custom LR Scheduler
     """
