@@ -123,8 +123,8 @@ class CustomLRScheduler(_LRScheduler):
         unlike PyTorch's CosineAnnealingWarmRestarts, which modifies step() method too.
         """
         # using the best hyperparameters from the paper
-        self.t_0 = 10
-        self.t_mult = 2
+        self.t_0 = 200
+        self.t_mult = 1
         self.eta_min = 0.0
         super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
 
