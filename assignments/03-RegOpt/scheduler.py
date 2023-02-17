@@ -180,6 +180,7 @@ class MyStepLR(_LRScheduler):
         """
         self.step_size = 20
         self.gamma = 0.9
+        self.initial_rate = 2
         super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -192,7 +193,7 @@ class MyStepLR(_LRScheduler):
             List of current learning rates
         """
         num_decays = self.last_epoch // self.step_size
-        decay_factor = self.gamma**num_decays
+        decay_factor = self.initial_rate * self.gamma**num_decays
 
         return [base_lr * decay_factor for base_lr in self.base_lrs]
 
