@@ -2,8 +2,7 @@ from typing import List
 import math
 from functools import partial
 
-# from torch.optim.lr_scheduler import _LRScheduler
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from torch.optim.lr_scheduler import _LRScheduler
 
 
 def cosine_annealing_warm_restarts(
@@ -101,18 +100,20 @@ def visualize_cosine_annealing() -> None:
     plt.show()
 
 
-class CustomLRScheduler(CosineAnnealingWarmRestarts):
+class MyCosineAnnealing(_LRScheduler):
     """
     Custom LR Scheduler using closed-form cosine annealing
     with warm restarts.
+
+    For some reason, this scheduler performs much worse than baseline
+    on the test set.
+    It's strange because even the official cosine annealing algorithm
+    by PyTorch performs poorly.
     """
 
     def __init__(self, optimizer, last_epoch=-1):
         """
         Create a new scheduler.
-
-        Note to students: You can change the arguments to this constructor,
-        if you need to add new parameters.
 
         Notes by Tianyi:
         This scheduler uses cosine annealing with warm restarts.
@@ -124,13 +125,10 @@ class CustomLRScheduler(CosineAnnealingWarmRestarts):
         unlike PyTorch's CosineAnnealingWarmRestarts, which modifies step() method too.
         """
         # using the best hyperparameters from the paper
-        # self.t_0 = 200
-        # self.t_mult = 1
-        # self.eta_min = 0.0
-        # super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
-        super(CustomLRScheduler, self).__init__(
-            optimizer, T_0=10, T_mult=2, eta_min=0, last_epoch=last_epoch
-        )
+        self.t_0 = 10
+        self.t_mult = 2
+        self.eta_min = 0.0
+        super().__init__(optimizer, last_epoch)
 
     def get_lr(self) -> List[float]:
         """
@@ -149,24 +147,59 @@ class CustomLRScheduler(CosineAnnealingWarmRestarts):
         # ... Your Code Here ...
         # Here's our dumb baseline implementation:
         # return [base_lr for base_lr in self.base_lrs]
-        # return self._get_closed_form_lr()
-        return super().get_lr()
+        return self._get_closed_form_lr()
 
-    # def _get_closed_form_lr(self) -> List[float]:
-    #     """
-    #     Get the closed form of the current learning rates.
-    #
-    #     Returns
-    #     -------
-    #     lr_list : List[float]
-    #         list of learning rates for each parameter group in `self.optimizer`.
-    #
-    #     """
-    #     f = partial(
-    #         cosine_annealing_warm_restarts,
-    #         t=self.last_epoch,
-    #         # eta_min=self.eta_min,
-    #         t_0=self.t_0,
-    #         t_mult=self.t_mult,
-    #     )
-    #     return [f(eta_max=base_lr, eta_min=base_lr * 0.1) for base_lr in self.base_lrs]
+    def _get_closed_form_lr(self) -> List[float]:
+        """
+        Get the closed form of the current learning rates.
+
+        Returns
+        -------
+        lr_list : List[float]
+            list of learning rates for each parameter group in `self.optimizer`.
+
+        """
+        f = partial(
+            cosine_annealing_warm_restarts,
+            t=self.last_epoch,
+            eta_min=self.eta_min,
+            t_0=self.t_0,
+            t_mult=self.t_mult,
+        )
+        return [f(eta_max=base_lr) for base_lr in self.base_lrs]
+
+
+class MyStepLR(_LRScheduler):
+    """
+    My own StepLR implementation.
+    """
+
+    def __init__(self, optimizer, last_epoch=-1):
+        """
+        Create a new StepLR scheduler.
+        """
+        self.step_size = 20
+        self.gamma = 0.5
+        super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
+
+    def get_lr(self) -> List[float]:
+        """
+        Compute learning rate.
+
+        Returns
+        -------
+        lr_list : List[float]
+            List of current learning rates
+        """
+        num_decays = self.last_epoch // self.step_size
+        decay_factor = self.gamma**num_decays
+
+        return [base_lr * decay_factor for base_lr in self.base_lrs]
+
+
+class CustomLRScheduler(MyStepLR):
+    """
+    Custom LR Scheduler
+    """
+
+    pass
