@@ -173,7 +173,7 @@ class MyStepLR(_LRScheduler):
         """
         Create a new StepLR scheduler.
         """
-        self.step_size = 5
+        self.step_size = 1 * 500
         self.gamma = 0.9
         self.initial_rate = 1.0
         super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
