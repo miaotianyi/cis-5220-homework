@@ -8,6 +8,7 @@
     ],
     "sources": [
         "PyTorch documentation: https://pytorch.org/docs/stable/optim.html",
-        "PyTorch source code: https://github.com/pytorch/pytorch/blob/master/torch/optim/lr_scheduler.py"
+        "PyTorch source code: https://github.com/pytorch/pytorch/blob/master/torch/optim/lr_scheduler.py",
+        "Cosine Annealing paper: https://arxiv.org/pdf/1608.03983v5.pdf"
     ]
 }
