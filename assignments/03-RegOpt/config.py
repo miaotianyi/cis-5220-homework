@@ -6,8 +6,8 @@ from torchvision.transforms import Compose, ToTensor
 
 
 class CONFIG:
-    batch_size = 64
-    num_epochs = 200
+    batch_size = 128
+    num_epochs = 150
     initial_learning_rate = 0.05
     initial_weight_decay = 0
 
