@@ -262,10 +262,10 @@ def visualize_cyclic():
         cyclic_triangular,
         eta_max=1e-2,
         eta_min=1e-5,
-        period=20,
+        period=500,
     )
 
-    max_t = 100
+    max_t = 500 * 4
     t_list = np.linspace(0, max_t, max_t + 1)
     lr_list = np.array([f1(t=t) for t in t_list])
     print(min(lr_list), max(lr_list))
