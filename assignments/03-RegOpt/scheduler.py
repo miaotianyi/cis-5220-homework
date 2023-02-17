@@ -217,6 +217,11 @@ def triangular_cos(x, period):
     return y
 
 
+def triangular_ncos(x, period):
+    # triangular cosine in range [0, 1], except first increases from 0 to 1
+    return -triangular_cos(x, period) + 1
+
+
 def visualize_triangular_wave() -> None:
     """
     Visualize triangular wave output
@@ -261,8 +266,8 @@ def visualize_cyclic():
 
     f1 = partial(
         cyclic_triangular,
-        eta_max=1e-2,
-        eta_min=1e-5,
+        eta_max=0.0001,
+        eta_min=0.0006,
         period=500,
     )
 
@@ -285,7 +290,8 @@ class MyCyclicLR(_LRScheduler):
         Create a new CyclicLR scheduler.
         """
         self.period = 1 * 500
-        self.eta_min = 1e-5
+        self.eta_min = 0.0001
+        self.eta_max = 0.0006
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -297,35 +303,17 @@ class MyCyclicLR(_LRScheduler):
         lr_list : List[float]
             List of current learning rates
         """
-        f = partial(
-            cyclic_triangular,
+
+        lr = cyclic_triangular(
             t=self.last_epoch,
             eta_min=self.eta_min,
+            eta_max=self.eta_max,
             period=self.period,
         )
-        return [f(eta_max=base_lr) for base_lr in self.base_lrs]
+        return [lr for _ in self.base_lrs]
 
 
-class OfficialCyclicLR(CyclicLR):
-    """
-    My own cyclic learning rate implementation.
-    See https://arxiv.org/pdf/1506.01186.pdf for paper.
-    """
-
-    def __init__(self, optimizer, last_epoch=-1):
-        """
-        Create a new CyclicLR scheduler.
-        """
-        super().__init__(
-            optimizer,
-            last_epoch=last_epoch,
-            base_lr=0.001,
-            max_lr=0.006,
-            step_size_up=500 * 2,
-        )
-
-
-class CustomLRScheduler(OfficialCyclicLR):
+class CustomLRScheduler(MyCyclicLR):
     """
     Custom LR Scheduler
     """
