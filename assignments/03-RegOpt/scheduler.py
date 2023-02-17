@@ -125,7 +125,7 @@ class CustomLRScheduler(_LRScheduler):
         # using the best hyperparameters from the paper
         self.t_0 = 200
         self.t_mult = 1
-        self.eta_min = 0.0
+        # self.eta_min = 0.0
         super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -160,8 +160,8 @@ class CustomLRScheduler(_LRScheduler):
         f = partial(
             cosine_annealing_warm_restarts,
             t=self.last_epoch,
-            eta_min=self.eta_min,
+            # eta_min=self.eta_min,
             t_0=self.t_0,
             t_mult=self.t_mult,
         )
-        return [f(eta_max=base_lr) for base_lr in self.base_lrs]
+        return [f(eta_max=base_lr, eta_min=base_lr * 0.1) for base_lr in self.base_lrs]
