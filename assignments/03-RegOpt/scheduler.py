@@ -179,7 +179,7 @@ class MyStepLR(_LRScheduler):
         Create a new StepLR scheduler.
         """
         self.step_size = 20
-        self.gamma = 0.5
+        self.gamma = 0.9
         super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
