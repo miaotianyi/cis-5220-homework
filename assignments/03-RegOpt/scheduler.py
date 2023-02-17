@@ -4,6 +4,7 @@ import numpy as np
 from functools import partial
 
 from torch.optim.lr_scheduler import _LRScheduler
+from torch.optim.lr_scheduler import CyclicLR
 
 
 def cosine_annealing_warm_restarts(
@@ -305,7 +306,26 @@ class MyCyclicLR(_LRScheduler):
         return [f(eta_max=base_lr) for base_lr in self.base_lrs]
 
 
-class CustomLRScheduler(MyCyclicLR):
+class OfficialCyclicLR(CyclicLR):
+    """
+    My own cyclic learning rate implementation.
+    See https://arxiv.org/pdf/1506.01186.pdf for paper.
+    """
+
+    def __init__(self, optimizer, last_epoch=-1):
+        """
+        Create a new CyclicLR scheduler.
+        """
+        super().__init__(
+            optimizer,
+            last_epoch=last_epoch,
+            base_lr=0.001,
+            max_lr=0.006,
+            step_size_up=500 * 2,
+        )
+
+
+class CustomLRScheduler(OfficialCyclicLR):
     """
     Custom LR Scheduler
     """
