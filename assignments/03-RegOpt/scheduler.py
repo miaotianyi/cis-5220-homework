@@ -129,7 +129,7 @@ class CustomLRScheduler(CosineAnnealingWarmRestarts):
         # self.eta_min = 0.0
         # super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
         super(CustomLRScheduler, self).__init__(
-            optimizer, T_0=100, T_mult=1, eta_min=0, last_epoch=last_epoch
+            optimizer, T_0=10, T_mult=2, eta_min=0, last_epoch=last_epoch
         )
 
     def get_lr(self) -> List[float]:
