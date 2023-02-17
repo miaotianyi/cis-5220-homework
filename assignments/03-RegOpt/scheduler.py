@@ -4,7 +4,6 @@ import numpy as np
 from functools import partial
 
 from torch.optim.lr_scheduler import _LRScheduler
-from torch.optim.lr_scheduler import CyclicLR
 
 
 def cosine_annealing_warm_restarts(
