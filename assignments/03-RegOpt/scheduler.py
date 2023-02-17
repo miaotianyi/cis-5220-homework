@@ -2,7 +2,8 @@ from typing import List
 import math
 from functools import partial
 
-from torch.optim.lr_scheduler import _LRScheduler
+# from torch.optim.lr_scheduler import _LRScheduler
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 
 def cosine_annealing_warm_restarts(
@@ -100,7 +101,7 @@ def visualize_cosine_annealing() -> None:
     plt.show()
 
 
-class CustomLRScheduler(_LRScheduler):
+class CustomLRScheduler(CosineAnnealingWarmRestarts):
     """
     Custom LR Scheduler using closed-form cosine annealing
     with warm restarts.
@@ -123,8 +124,8 @@ class CustomLRScheduler(_LRScheduler):
         unlike PyTorch's CosineAnnealingWarmRestarts, which modifies step() method too.
         """
         # using the best hyperparameters from the paper
-        self.t_0 = 200
-        self.t_mult = 1
+        # self.t_0 = 200
+        # self.t_mult = 1
         # self.eta_min = 0.0
         super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
 
@@ -145,23 +146,24 @@ class CustomLRScheduler(_LRScheduler):
         # ... Your Code Here ...
         # Here's our dumb baseline implementation:
         # return [base_lr for base_lr in self.base_lrs]
-        return self._get_closed_form_lr()
+        # return self._get_closed_form_lr()
+        return super().get_lr()
 
-    def _get_closed_form_lr(self) -> List[float]:
-        """
-        Get the closed form of the current learning rates.
-
-        Returns
-        -------
-        lr_list : List[float]
-            list of learning rates for each parameter group in `self.optimizer`.
-
-        """
-        f = partial(
-            cosine_annealing_warm_restarts,
-            t=self.last_epoch,
-            # eta_min=self.eta_min,
-            t_0=self.t_0,
-            t_mult=self.t_mult,
-        )
-        return [f(eta_max=base_lr, eta_min=base_lr * 0.1) for base_lr in self.base_lrs]
+    # def _get_closed_form_lr(self) -> List[float]:
+    #     """
+    #     Get the closed form of the current learning rates.
+    #
+    #     Returns
+    #     -------
+    #     lr_list : List[float]
+    #         list of learning rates for each parameter group in `self.optimizer`.
+    #
+    #     """
+    #     f = partial(
+    #         cosine_annealing_warm_restarts,
+    #         t=self.last_epoch,
+    #         # eta_min=self.eta_min,
+    #         t_0=self.t_0,
+    #         t_mult=self.t_mult,
+    #     )
+    #     return [f(eta_max=base_lr, eta_min=base_lr * 0.1) for base_lr in self.base_lrs]
