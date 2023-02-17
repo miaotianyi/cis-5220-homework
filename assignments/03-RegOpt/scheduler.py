@@ -258,7 +258,7 @@ def cyclic_triangular(t: int, eta_min: float, eta_max: float, period: int) -> fl
     lr : float
         Learning rate.
     """
-    return eta_min + (eta_max - eta_min) * triangular_cos(x=t, period=period)
+    return eta_min + (eta_max - eta_min) * triangular_ncos(x=t, period=period)
 
 
 def visualize_cyclic():
