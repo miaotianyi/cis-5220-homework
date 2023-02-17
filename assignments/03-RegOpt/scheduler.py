@@ -1,5 +1,6 @@
 from typing import List
 import math
+import numpy as np
 from functools import partial
 
 from torch.optim.lr_scheduler import _LRScheduler
@@ -177,6 +178,73 @@ class MyStepLR(_LRScheduler):
         self.gamma = 0.9
         self.initial_rate = 1.0
         super(MyStepLR, self).__init__(optimizer, last_epoch=last_epoch)
+
+    def get_lr(self) -> List[float]:
+        """
+        Compute learning rate.
+
+        Returns
+        -------
+        lr_list : List[float]
+            List of current learning rates
+        """
+        num_decays = self.last_epoch // self.step_size
+        decay_factor = self.initial_rate * self.gamma**num_decays
+
+        return [base_lr * decay_factor for base_lr in self.base_lrs]
+
+
+def triangular_cos(x, period):
+    """
+    A cosine-like triangle wave with f(0) = 0.
+
+    The amplitude is between 0 and 1.
+
+    Parameters
+    ----------
+    x : int, float, np.ndarray
+        The input variable x
+
+    period : float
+        The period of the triangular wave
+
+    Returns
+    -------
+    y : int, float, np.ndarray
+        The output variable y
+    """
+    y = np.abs(x % period - period / 2) / (period / 2)
+    return y
+
+
+def visualize_triangular_wave() -> None:
+    """
+    Visualize triangular wave output
+    """
+    from matplotlib import pyplot as plt
+
+    x = np.linspace(-10, 10, 1000)
+    y1 = triangular_cos(x, period=2 * np.pi)
+    y2 = np.cos(x)
+    plt.plot(x, y1)
+    plt.plot(x, y2)
+    plt.show()
+
+
+class MyCyclicLR(_LRScheduler):
+    """
+    My own cyclic learning rate implementation.
+    See https://arxiv.org/pdf/1506.01186.pdf for paper.
+    """
+
+    def __init__(self, optimizer, last_epoch=-1):
+        """
+        Create a new CyclicLR scheduler.
+        """
+        self.step_size = 1 * 500
+        self.gamma = 0.9
+        self.initial_rate = 1.0
+        super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
         """
