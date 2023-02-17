@@ -265,9 +265,9 @@ def visualize_cyclic():
 
     f1 = partial(
         cyclic_triangular,
-        eta_max=0.0001,
-        eta_min=0.0006,
-        period=500,
+        eta_max=0.0006,
+        eta_min=0.0001,
+        period=500 * 2,
     )
 
     max_t = 500 * 4
@@ -288,9 +288,9 @@ class MyCyclicLR(_LRScheduler):
         """
         Create a new CyclicLR scheduler.
         """
-        self.period = 1 * 500
+        self.period = 2 * 500
         self.eta_min = 0.0001
-        self.eta_max = 0.0006
+        self.eta_max = 0.001
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
