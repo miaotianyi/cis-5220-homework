@@ -86,7 +86,6 @@ def visualize_cosine_annealing() -> None:
     """
     Visualization script for cosine annealing with warm restarts
     """
-    import numpy as np
     from matplotlib import pyplot as plt
 
     f1 = partial(
@@ -231,6 +230,49 @@ def visualize_triangular_wave() -> None:
     plt.show()
 
 
+def cyclic_triangular(t: int, eta_min: float, eta_max: float, period: int) -> float:
+    """
+
+    Parameters
+    ----------
+    t : int
+        Epoch number
+
+    eta_min : float
+        Minimum learning rate
+
+    eta_max : float
+        Maximum learning rate
+
+    period : int
+        Length of a full cycle.
+
+    Returns
+    -------
+    lr : float
+        Learning rate.
+    """
+    return eta_min + (eta_max - eta_min) * triangular_cos(x=t, period=period)
+
+
+def visualize_cyclic():
+    from matplotlib import pyplot as plt
+
+    f1 = partial(
+        cyclic_triangular,
+        eta_max=1e-2,
+        eta_min=1e-5,
+        period=20,
+    )
+
+    max_t = 100
+    t_list = np.linspace(0, max_t, max_t + 1)
+    lr_list = np.array([f1(t=t) for t in t_list])
+    print(min(lr_list), max(lr_list))
+    plt.scatter(t_list, lr_list)
+    plt.show()
+
+
 class MyCyclicLR(_LRScheduler):
     """
     My own cyclic learning rate implementation.
@@ -242,8 +284,7 @@ class MyCyclicLR(_LRScheduler):
         Create a new CyclicLR scheduler.
         """
         self.step_size = 1 * 500
-        self.gamma = 0.9
-        self.initial_rate = 1.0
+        self.eta_min = 1e-5
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -255,13 +296,16 @@ class MyCyclicLR(_LRScheduler):
         lr_list : List[float]
             List of current learning rates
         """
-        num_decays = self.last_epoch // self.step_size
-        decay_factor = self.initial_rate * self.gamma**num_decays
+        f = partial(
+            cyclic_triangular,
+            t=self.last_epoch,
+            eta_min=self.eta_min,
+            period=self.period,
+        )
+        return [f(eta_max=base_lr) for base_lr in self.base_lrs]
 
-        return [base_lr * decay_factor for base_lr in self.base_lrs]
 
-
-class CustomLRScheduler(MyStepLR):
+class CustomLRScheduler(MyCyclicLR):
     """
     Custom LR Scheduler
     """
