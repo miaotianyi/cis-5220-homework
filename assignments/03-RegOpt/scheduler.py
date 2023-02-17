@@ -283,7 +283,7 @@ class MyCyclicLR(_LRScheduler):
         """
         Create a new CyclicLR scheduler.
         """
-        self.step_size = 1 * 500
+        self.period = 1 * 500
         self.eta_min = 1e-5
         super().__init__(optimizer, last_epoch=last_epoch)
 
