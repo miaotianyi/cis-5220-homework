@@ -105,6 +105,7 @@ class CustomLRScheduler(_LRScheduler):
     Custom LR Scheduler using closed-form cosine annealing
     with warm restarts.
     """
+
     def __init__(self, optimizer, last_epoch=-1):
         """
         Create a new scheduler.
@@ -164,4 +165,3 @@ class CustomLRScheduler(_LRScheduler):
             t_mult=self.t_mult,
         )
         return [f(eta_max=base_lr) for base_lr in self.base_lrs]
-
