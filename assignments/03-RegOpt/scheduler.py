@@ -298,7 +298,7 @@ class MyCyclicLR(_LRScheduler):
         self.period = 2 * 500
         self.eta_min = 0.0001
         self.eta_max = 0.001
-        self.use_triangular_2 = True
+        self.use_triangular_2 = False
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
