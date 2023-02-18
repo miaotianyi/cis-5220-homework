@@ -260,17 +260,24 @@ def cyclic_triangular(t: int, eta_min: float, eta_max: float, period: int) -> fl
     return eta_min + (eta_max - eta_min) * triangular_ncos(x=t, period=period)
 
 
+def cyclic_triangular_2(t: int, eta_min: float, eta_max: float, period: int) -> float:
+    discount = (1 / 2) ** (t // period)
+    return eta_min + (eta_max - eta_min) * discount * triangular_ncos(
+        x=t, period=period
+    )
+
+
 def visualize_cyclic():
     from matplotlib import pyplot as plt
 
     f1 = partial(
-        cyclic_triangular,
+        cyclic_triangular_2,
         eta_max=0.0006,
         eta_min=0.0001,
         period=500 * 2,
     )
 
-    max_t = 500 * 4
+    max_t = 500 * 8
     t_list = np.linspace(0, max_t, max_t + 1)
     lr_list = np.array([f1(t=t) for t in t_list])
     print(min(lr_list), max(lr_list))
@@ -291,6 +298,7 @@ class MyCyclicLR(_LRScheduler):
         self.period = 2 * 500
         self.eta_min = 0.0001
         self.eta_max = 0.001
+        self.use_triangular_2 = True
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
@@ -302,8 +310,9 @@ class MyCyclicLR(_LRScheduler):
         lr_list : List[float]
             List of current learning rates
         """
+        f = cyclic_triangular_2 if self.use_triangular_2 else cyclic_triangular
 
-        lr = cyclic_triangular(
+        lr = f(
             t=self.last_epoch,
             eta_min=self.eta_min,
             eta_max=self.eta_max,
