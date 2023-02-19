@@ -295,10 +295,10 @@ class MyCyclicLR(_LRScheduler):
         """
         Create a new CyclicLR scheduler.
         """
-        self.period = 2 * 500
+        self.period = int(2 * (50000 / 64))
         self.eta_min = 0.0001
-        self.eta_max = 0.001
-        self.use_triangular_2 = False
+        self.eta_max = 0.1
+        self.use_triangular_2 = True
         super().__init__(optimizer, last_epoch=last_epoch)
 
     def get_lr(self) -> List[float]:
