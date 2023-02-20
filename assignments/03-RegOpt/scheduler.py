@@ -267,6 +267,13 @@ def cyclic_triangular_2(t: int, eta_min: float, eta_max: float, period: int) -> 
     )
 
 
+def cyclic_triangular_gamma(
+    t: int, eta_min: float, eta_max: float, period: int, cycle_gamma=1.0
+) -> float:
+    eta_max = cycle_gamma ** (t // period) * eta_max
+    return eta_min + (eta_max - eta_min) * triangular_ncos(x=t, period=period)
+
+
 def visualize_cyclic():
     from matplotlib import pyplot as plt
 

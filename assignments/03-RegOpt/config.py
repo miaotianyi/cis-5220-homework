@@ -2,7 +2,7 @@ from typing import Callable
 import torch
 import torch.optim
 import torch.nn as nn
-from torchvision.transforms import Compose, ToTensor
+from torchvision.transforms import Compose, ToTensor, Normalize
 
 
 class CONFIG:
@@ -27,5 +27,6 @@ class CONFIG:
     transforms = Compose(
         [
             ToTensor(),
+            Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
         ]
     )
