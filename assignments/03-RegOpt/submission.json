@@ -11,6 +11,7 @@
         "PyTorch source code: https://github.com/pytorch/pytorch/blob/master/torch/optim/lr_scheduler.py",
         "Cosine Annealing paper: https://arxiv.org/pdf/1608.03983v5.pdf",
         "Cyclic LR paper: https://arxiv.org/pdf/1506.01186.pdf",
-        "I discussed with Shengao Yi regarding which scheduler to implement and some hyperparameters, but it turns out I'm just running for too few (2) epochs; we didn't discuss implementation details, nor did I look at his source code"
+        "I discussed with Shengao Yi regarding which scheduler to implement and some hyperparameters, but it turns out I'm just running for too few (2) epochs; we didn't discuss implementation details, nor did I look at his source code",
+        "CIFAR normalization: https://github.com/kuangliu/pytorch-cifar/issues/19"
     ]
 }
