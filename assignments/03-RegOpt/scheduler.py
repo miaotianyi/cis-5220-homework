@@ -302,7 +302,7 @@ class MyCyclicLR(_LRScheduler):
         """
         Create a new CyclicLR scheduler.
         """
-        self.period = int(1 * (50000 / 32))
+        self.period = int(2 * (50000 / 32))
         self.eta_min = 0.0001
         self.eta_max = 0.2
         self.use_triangular_2 = False
