@@ -8,7 +8,7 @@ from torchvision.transforms import RandomHorizontalFlip
 
 class CONFIG:
     batch_size = 32
-    num_epochs = 12
+    num_epochs = 10
     initial_learning_rate = 0.01
     initial_weight_decay = 0.001
 
@@ -28,6 +28,7 @@ class CONFIG:
     transforms = Compose(
         [
             ToTensor(),
+            # ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1),
             # Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             RandomHorizontalFlip(p=0.5),
@@ -45,3 +46,5 @@ class CONFIG:
 # flip first, then to tensor: (~85 it/s): 0.72/0.69
 # normalize 0.5/0.5: 0.724/0.683
 # flip first: 0.721/0.679
+# std=1: 0.702/0.661
+# color jitter: (~40 it/s): 0.713/0.677
