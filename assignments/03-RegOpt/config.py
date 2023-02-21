@@ -4,12 +4,10 @@ import torch.optim
 import torch.nn as nn
 from torchvision.transforms import Compose, ToTensor, Normalize
 
-from torchvision.transforms import RandomHorizontalFlip
-
 
 class CONFIG:
     batch_size = 32
-    num_epochs = 12
+    num_epochs = 15
     initial_learning_rate = 0.01
     initial_weight_decay = 0.001
 
@@ -32,7 +30,6 @@ class CONFIG:
             # ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1),
             # Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            RandomHorizontalFlip(p=0.5),
         ]
     )
 
