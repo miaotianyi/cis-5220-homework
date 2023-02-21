@@ -48,3 +48,4 @@ class CONFIG:
 # flip first: 0.721/0.679
 # std=1: 0.702/0.661
 # color jitter: (~40 it/s): 0.713/0.677
+# resubmit for bad output/timeout
