@@ -3,8 +3,7 @@ import torch
 import torch.optim
 import torch.nn as nn
 from torchvision.transforms import Compose, ToTensor, Normalize
-
-# from torchvision.transforms import RandomHorizontalFlip
+from torchvision.transforms import RandomHorizontalFlip
 
 
 class CONFIG:
@@ -32,7 +31,7 @@ class CONFIG:
             # ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1),
             # Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            # RandomHorizontalFlip(p=0.5),
+            RandomHorizontalFlip(p=0.5),
         ]
     )
 
