@@ -175,6 +175,21 @@ class ConvNeXt(nn.Module):
         return x
 
 
+class SimpleNet(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        self.stem = nn.Sequential(
+            nn.Conv2d(
+                in_channels=num_channels,
+                out_channels=128,
+                kernel_size=3,
+                stride=1,
+                padding=1,
+            ),
+            nn.ReLU(),
+        )
+
+
 class Model(torch.nn.Module):
     """
     My model for HW4 submission.
@@ -195,8 +210,9 @@ class Model(torch.nn.Module):
         super().__init__()
         # depths = [3, 3, 9, 3]
         # dims=[96, 192, 384, 768]
-        depths = [3, 3, 6, 3]
-        dims = [48, 96, 192, 384]
+        depths = [3, 3, 9, 3]
+        # dims = [48, 96, 192, 384]
+        dims = [32, 64, 128, 256]
 
         self.model = ConvNeXt(
             in_chans=num_channels,
