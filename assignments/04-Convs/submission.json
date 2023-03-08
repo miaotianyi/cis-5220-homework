@@ -2,11 +2,11 @@
     "assignment_name": "Convolutions",
     "contributors": [
         {
-            "name": "Change this to your name",
-            "pennkey": "MyPennKey"
+            "name": "Tianyi Miao",
+            "pennkey": "mtianyi"
         }
     ],
     "sources": [
-        "Don't forget to list your sources/attribution here!"
+        "ConvNeXt: https://github.com/facebookresearch/ConvNeXt"
     ]
 }
