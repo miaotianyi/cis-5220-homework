@@ -224,6 +224,34 @@ class SimpleNet(nn.Module):
         return x
 
 
+class SimpleNet2(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        # format: kernel_size, stride, padding
+        dims = [32, 32, 32, 32]
+        block_list = [
+            nn.Conv2d(num_channels, dims[0], 3, stride=2, padding=1),
+            nn.ReLU(),
+        ]
+
+        for fan_in, fan_out in zip(dims, dims[1:]):
+            block_list.extend([
+                nn.BatchNorm2d(num_features=fan_in),
+                nn.Conv2d(fan_in, fan_out, 3, 2, 0, bias=True),
+                # nn.BatchNorm2d(num_features=fan_out),
+                nn.ReLU()
+            ])
+
+        block_list.append(nn.Flatten(start_dim=1))
+        block_list.append(nn.Linear(dims[-1], num_classes))
+        self.model = nn.Sequential(*block_list)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = (x - 0.5) * 2  # faster normalize
+        x = self.model(x)
+        return x
+
+
 class Model(torch.nn.Module):
     """
     My model for HW4 submission.
@@ -251,7 +279,8 @@ class Model(torch.nn.Module):
         #     depths=depths,
         #     dims=dims,
         # )
-        self.model = SimpleNet(num_channels, num_classes, [32] * 4)
+        # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
+        self.model = SimpleNet2(num_channels, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
