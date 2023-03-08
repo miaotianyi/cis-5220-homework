@@ -240,10 +240,7 @@ class Model(torch.nn.Module):
         """
         super().__init__()
         # depths = [3, 3, 9, 3]
-        # dims=[96, 192, 384, 768]
-        depths = [3, 3, 9, 3]
         # dims = [48, 96, 192, 384]
-        dims = [32, 64, 128, 256]
 
         # self.model = ConvNeXt(
         #     in_chans=num_channels,
