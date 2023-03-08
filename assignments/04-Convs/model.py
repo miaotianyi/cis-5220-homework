@@ -203,8 +203,9 @@ class SimpleNet(nn.Module):
         body_list = []
         for fan_in, fan_out in zip(dims, dims[1:]):
             block = nn.Sequential(
-                nn.BatchNorm2d(num_features=fan_out),
+                nn.BatchNorm2d(num_features=fan_in),
                 nn.Conv2d(fan_in, fan_out, 3, 2, 0, bias=True),
+                # nn.BatchNorm2d(num_features=fan_out),
                 nn.ReLU(),
             )
             body_list.append(block)
