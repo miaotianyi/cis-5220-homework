@@ -214,6 +214,7 @@ class SimpleNet(nn.Module):
         self.head = nn.Linear(dims[-1], num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = (x - 0.5) * 2   # faster normalize
         x = self.stem(x)
         x = self.body(x)
         # global average pooling
