@@ -203,8 +203,8 @@ class SimpleNet(nn.Module):
         body_list = []
         for fan_in, fan_out in zip(dims, dims[1:]):
             block = nn.Sequential(
-                nn.Conv2d(fan_in, fan_out, 3, 1, 0, bias=False),
                 nn.BatchNorm2d(num_features=fan_out),
+                nn.Conv2d(fan_in, fan_out, 3, 2, 0, bias=True),
                 nn.ReLU(),
             )
             body_list.append(block)
@@ -216,7 +216,8 @@ class SimpleNet(nn.Module):
         x = self.stem(x)
         x = self.body(x)
         # global average pooling
-        x = x.mean([-2, -1])
+        x = torch.flatten(x, start_dim=1)
+        # x = x.mean([-2, -1])
         x = self.head(x)
         return x
 
