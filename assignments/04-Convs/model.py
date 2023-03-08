@@ -230,7 +230,7 @@ class SimpleNet2(nn.Module):
         # format: kernel_size, stride, padding
         dims = [32, 32, 32, 32]
         block_list = [
-            nn.Conv2d(num_channels, dims[0], 3, stride=2, padding=1),
+            nn.Conv2d(num_channels, dims[0], 3, stride=2, padding=0),
             nn.ReLU(),
         ]
 
