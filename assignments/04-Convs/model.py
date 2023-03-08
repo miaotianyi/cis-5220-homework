@@ -175,19 +175,50 @@ class ConvNeXt(nn.Module):
         return x
 
 
+class Residual(nn.Module):
+    def __init__(self, layer: nn.Module):
+        """
+        A residual wrapper for any neural network layer
+
+        Parameters
+        ----------
+        layer : nn.Module
+            The base layer
+        """
+        super(Residual, self).__init__()
+        self.layer = layer
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.layer(x)
+
+
 class SimpleNet(nn.Module):
-    def __init__(self, num_channels, num_classes):
+    def __init__(self, num_channels, num_classes, dims=(32, 32, 32)):
         super().__init__()
+        # format: kernel_size, stride, padding
         self.stem = nn.Sequential(
-            nn.Conv2d(
-                in_channels=num_channels,
-                out_channels=128,
-                kernel_size=3,
-                stride=1,
-                padding=1,
-            ),
+            nn.Conv2d(num_channels, dims[0], 3, stride=2, padding=1),
             nn.ReLU(),
         )
+        body_list = []
+        for fan_in, fan_out in zip(dims, dims[1:]):
+            block = nn.Sequential(
+                nn.Conv2d(fan_in, fan_out, 3, 1, 0, bias=False),
+                nn.BatchNorm2d(num_features=fan_out),
+                nn.ReLU(),
+            )
+            body_list.append(block)
+
+        self.body = nn.Sequential(*body_list)
+        self.head = nn.Linear(dims[-1], num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.stem(x)
+        x = self.body(x)
+        # global average pooling
+        x = x.mean([-2, -1])
+        x = self.head(x)
+        return x
 
 
 class Model(torch.nn.Module):
@@ -214,12 +245,13 @@ class Model(torch.nn.Module):
         # dims = [48, 96, 192, 384]
         dims = [32, 64, 128, 256]
 
-        self.model = ConvNeXt(
-            in_chans=num_channels,
-            num_classes=num_classes,
-            depths=depths,
-            dims=dims,
-        )
+        # self.model = ConvNeXt(
+        #     in_chans=num_channels,
+        #     num_classes=num_classes,
+        #     depths=depths,
+        #     dims=dims,
+        # )
+        self.model = SimpleNet(num_channels, num_classes, [32] * 4)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
