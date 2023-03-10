@@ -353,6 +353,7 @@ class Model(torch.nn.Module):
         # cache warmup without model parameter update
         # presumably some Linux cache magic?
         import time
+
         tic = time.time()
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=2e-3)
