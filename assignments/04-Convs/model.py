@@ -276,7 +276,7 @@ class SimpleNet3(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = (x - 0.5) * 2  # faster normalize
+        # x = (x - 0.5) * 2  # faster normalize
         x = self.model(x)
         return x
 
