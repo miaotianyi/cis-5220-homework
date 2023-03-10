@@ -16,7 +16,7 @@ from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
 
 
-LOCAL_MODE = True
+LOCAL_MODE = False
 if LOCAL_MODE:
     device = "cpu"
 else:
