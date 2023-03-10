@@ -5,6 +5,7 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+import time
 
 import torch
 import torch.nn as nn
@@ -13,6 +14,9 @@ import torch.nn.functional as F
 from torchvision.datasets import CIFAR10
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
+
+
+LOCAL_MODE = False
 
 
 class LayerNorm(nn.Module):
@@ -352,22 +356,26 @@ class Model(torch.nn.Module):
 
         # cache warmup without model parameter update
         # presumably some Linux cache magic?
-        import time
-
-        tic = time.time()
+        if LOCAL_MODE:
+            tic = time.time()
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=2e-3)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(device)
+        if LOCAL_MODE:
+            device = "cpu"
+        else:
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         self.to(device)
 
-        use_training_warmup = True
+        use_training_warmup = False
+        use_random_warmup = True
+        batch_size = 200
 
         if use_training_warmup:
             train_data = CIFAR10(
                 root="data/cifar10", train=True, download=False, transform=ToTensor()
             )
-            train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
+            train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
             for i, (x, y) in enumerate(train_loader):
                 if i > 5:
                     break
@@ -375,20 +383,21 @@ class Model(torch.nn.Module):
                 y_hat = self.model(x)
                 loss = criterion(y_hat, y)
                 loss.backward()
-                # optimizer.step()
-                optimizer.zero_grad(set_to_none=False)
-        else:
-            x = torch.rand(128, 3, 32, 32, device=device)
-            y = torch.randint(10, size=[128], device=device)
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+        if use_random_warmup:
+            x = torch.rand(batch_size, 3, 32, 32, device=device)
+            y = torch.randint(10, size=[batch_size], device=device)
             y_hat = self.model(x)
             loss = criterion(y_hat, y)
             loss.backward()
             # optimizer.step()
-            optimizer.zero_grad(set_to_none=False)
+            optimizer.zero_grad(set_to_none=True)
 
         # note: no parameter is updated in this step
-        toc = time.time()
-        print(f"Pretraining time: {toc - tic:.2f} seconds")
+        if LOCAL_MODE:
+            toc = time.time()
+            print(f"Pretraining time: {toc - tic:.2f} seconds")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
