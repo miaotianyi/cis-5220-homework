@@ -271,8 +271,8 @@ class SimpleNet3(nn.Module):
             nn.BatchNorm2d(num_features=32),
             nn.Conv2d(32, 32, 3, stride=2, padding=0),
             nn.Flatten(start_dim=1),
-            nn.ReLU(),
-            nn.BatchNorm1d(32),
+            # nn.ReLU(),
+            # nn.BatchNorm1d(32),
             nn.Linear(32, num_classes),
         )
 
