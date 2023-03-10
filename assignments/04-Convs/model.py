@@ -269,10 +269,10 @@ class SimpleNet3(nn.Module):
             # nn.Conv2d(32, 32, 3, stride=2, padding=0),
             # nn.ReLU(),
             nn.BatchNorm2d(num_features=32),
-            nn.Conv2d(32, 32, 3, stride=2, padding=0),
-            nn.ReLU(),
+            nn.Conv2d(32, 10, 3, stride=2, padding=0),
+            # nn.ReLU(),
             nn.Flatten(start_dim=1),
-            nn.Linear(32, num_classes),
+            # nn.Linear(32, num_classes),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
