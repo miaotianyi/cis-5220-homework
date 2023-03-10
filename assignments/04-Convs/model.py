@@ -285,6 +285,34 @@ class SimpleNet3(nn.Module):
         return self.model(x * 2)
 
 
+class SimpleNet4(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        # is sequential slower?
+
+        # format: kernel_size, stride, padding
+        self.conv1 = nn.Conv2d(num_channels, 32, 3, stride=2, padding=0)
+        self.bn2 = nn.BatchNorm2d(num_features=32)
+        self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=0)
+        self.bn3 = nn.BatchNorm2d(num_features=32)
+        self.conv3 = nn.Conv2d(32, 32, 3, stride=2, padding=0)
+        self.linear = nn.Linear(32, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x * 2 - 1
+        x = self.conv1(x)
+        x = torch.relu(x)
+        x = self.bn2(x)
+        x = self.conv2(x)
+        x = torch.max_pool2d(x, kernel_size=3, stride=2, padding=0)
+        x = torch.relu(x)
+        x = self.bn3(x)
+        x = self.conv3(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear(x)
+        return x
+
+
 class Model(torch.nn.Module):
     """
     My model for HW4 submission.
@@ -313,7 +341,7 @@ class Model(torch.nn.Module):
         #     dims=dims,
         # )
         # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
-        self.model = SimpleNet3(num_channels, num_classes)
+        self.model = SimpleNet4(num_channels, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
