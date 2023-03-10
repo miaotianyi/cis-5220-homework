@@ -355,11 +355,17 @@ class Model(torch.nn.Module):
         # )
         # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
         use_training_warmup = False
-        use_random_warmup = False
+        use_random_warmup = True
         batch_size = 200
 
-        model = SimpleNet4(num_channels, num_classes)
-        self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
+        # seed = torch.randint(0, 2**32, size=[1]).item()
+        seed = 1927859108
+        if LOCAL_MODE:
+            print(f"{seed=}")
+        torch.manual_seed(seed)
+
+        self.model = SimpleNet4(num_channels, num_classes)
+        # self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
 
         self.num_classes = num_classes
 
