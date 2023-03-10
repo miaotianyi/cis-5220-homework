@@ -341,6 +341,7 @@ class Model(torch.nn.Module):
         #     dims=dims,
         # )
         # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
+        # self.model = torch.jit.script(SimpleNet4(num_channels, num_classes))
         self.model = SimpleNet4(num_channels, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
