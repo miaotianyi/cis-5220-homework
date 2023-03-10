@@ -354,7 +354,12 @@ class Model(torch.nn.Module):
         #     dims=dims,
         # )
         # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
-        self.model = SimpleNet4(num_channels, num_classes)
+        use_training_warmup = False
+        use_random_warmup = False
+        batch_size = 200
+
+        model = SimpleNet4(num_channels, num_classes)
+        self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
 
         self.num_classes = num_classes
 
@@ -366,10 +371,6 @@ class Model(torch.nn.Module):
         optimizer = torch.optim.Adam(self.model.parameters(), lr=2e-3)
 
         self.to(device)
-
-        use_training_warmup = False
-        use_random_warmup = True
-        batch_size = 200
 
         if use_training_warmup:
             train_data = CIFAR10(
