@@ -10,6 +10,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# from torchvision.datasets import CIFAR10
+# from torchvision.transforms import ToTensor
+# from torch.utils.data import DataLoader
+
 
 class LayerNorm(nn.Module):
     r"""LayerNorm that supports two data formats: channels_last (default) or channels_first.
@@ -346,27 +350,34 @@ class Model(torch.nn.Module):
 
         self.num_classes = num_classes
 
-        # pretraining
-        from torchvision.datasets import CIFAR10
-        from torchvision.transforms import ToTensor
-        from torch.utils.data import DataLoader
-
-        train_data = CIFAR10(
-            root="data/cifar10", train=True, download=False, transform=ToTensor()
-        )
-        train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
+        # cache warmup without model parameter update
+        # presumably some Linux cache magic?
+        # import time
+        # tic = time.time()
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=2e-3)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device)
 
-        for x, y in train_loader:
-            x, y = x.to(device), y.to(device)
-            optimizer.zero_grad(set_to_none=True)
-            y_hat = self.model(x)
-            loss = criterion(y_hat, y)
-            loss.backward()
-            optimizer.step()
+        # if use_training_warmup := False:
+        #     train_data = CIFAR10(
+        #         root="data/cifar10", train=True, download=False, transform=ToTensor()
+        #     )
+        #     train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
+        #     x, y = next(iter(train_loader))
+        #     x, y = x.to(device), y.to(device)
+        # else:
+        x = torch.rand(128, 3, 32, 32, device=device)
+        y = torch.randint(10, size=[128], device=device)
+        y_hat = self.model(x)
+        loss = criterion(y_hat, y)
+        loss.backward()
+        # optimizer.step()
+        optimizer.zero_grad(set_to_none=False)
+
+        # note: no parameter is updated in this step
+        # toc = time.time()
+        # print(f"Pretraining time: {toc - tic:.2f} seconds")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -382,9 +393,9 @@ class Model(torch.nn.Module):
         torch.Tensor
             The output [N, N_classes] class probability tensor
         """
-        if self.training:
-            # does not update model
-            return torch.ones(
-                1, device=x.device, dtype=x.dtype, requires_grad=True
-            ).expand(x.shape[0], self.num_classes)
+        # if self.training:
+        #     # does not update model
+        #     return torch.ones(
+        #         1, device=x.device, dtype=x.dtype, requires_grad=True
+        #     ).expand(x.shape[0], self.num_classes)
         return self.model(x)
