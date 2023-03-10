@@ -254,6 +254,32 @@ class SimpleNet2(nn.Module):
         return x
 
 
+class SimpleNet3(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        # format: kernel_size, stride, padding
+        self.model = nn.Sequential(
+            nn.Conv2d(num_channels, 32, 3, stride=2, padding=0),
+            nn.ReLU(),
+            nn.BatchNorm2d(num_features=32),
+            nn.Conv2d(32, 32, 3, stride=2, padding=0),
+            nn.ReLU(),
+            nn.BatchNorm2d(num_features=32),
+            nn.Conv2d(32, 32, 3, stride=2, padding=0),
+            nn.ReLU(),
+            nn.BatchNorm2d(num_features=32),
+            nn.Conv2d(32, 32, 3, stride=2, padding=0),
+            nn.ReLU(),
+            nn.Flatten(start_dim=1),
+            nn.Linear(32, num_classes)
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = (x - 0.5) * 2  # faster normalize
+        x = self.model(x)
+        return x
+
+
 class Model(torch.nn.Module):
     """
     My model for HW4 submission.
@@ -282,7 +308,7 @@ class Model(torch.nn.Module):
         #     dims=dims,
         # )
         # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
-        self.model = SimpleNet2(num_channels, num_classes)
+        self.model = SimpleNet3(num_channels, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
