@@ -269,15 +269,16 @@ class SimpleNet3(nn.Module):
             # nn.Conv2d(32, 32, 3, stride=2, padding=0),
             # nn.ReLU(),
             nn.BatchNorm2d(num_features=32),
-            nn.Conv2d(32, 10, 3, stride=2, padding=0),
-            # nn.ReLU(),
+            nn.Conv2d(32, 32, 3, stride=2, padding=0),
             nn.Flatten(start_dim=1),
-            # nn.Linear(32, num_classes),
+            nn.ReLU(),
+            nn.BatchNorm1d(32),
+            nn.Linear(32, num_classes),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x = (x - 0.5) * 2  # faster normalize
-        x = x * 2
+        # x = x * 2
         x = self.model(x)
         return x
 
