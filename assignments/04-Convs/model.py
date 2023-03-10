@@ -309,8 +309,8 @@ class SimpleNet4(nn.Module):
         x = self.bn3(x)
         x = self.conv3(x)
         x = x.view(-1, 32)
-        # x = torch.flatten(x, start_dim=1)
-        x = self.linear(x)
+        x = torch.flatten(x, start_dim=1)
+        # x = self.linear(x)
         return x
 
 
