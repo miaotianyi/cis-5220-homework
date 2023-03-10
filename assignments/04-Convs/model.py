@@ -16,7 +16,11 @@ from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
 
 
-LOCAL_MODE = False
+LOCAL_MODE = True
+if LOCAL_MODE:
+    device = "cpu"
+else:
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class LayerNorm(nn.Module):
@@ -360,10 +364,6 @@ class Model(torch.nn.Module):
             tic = time.time()
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr=2e-3)
-        if LOCAL_MODE:
-            device = "cpu"
-        else:
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.to(device)
 
