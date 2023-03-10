@@ -275,6 +275,7 @@ class SimpleNet3(nn.Module):
             # nn.BatchNorm1d(32),
             nn.Linear(32, num_classes),
         )
+        self.num_classes = num_classes
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x = (x - 0.5) * 2  # faster normalize
