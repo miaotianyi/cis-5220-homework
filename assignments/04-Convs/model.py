@@ -301,15 +301,15 @@ class SimpleNet4(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x * 2 - 1
         x = self.conv1(x)
-        x = torch.relu_(x)
+        x = torch.relu(x)
         x = self.bn2(x)
         x = self.conv2(x)
         x = torch.max_pool2d(x, kernel_size=3, stride=2, padding=0)
-        x = torch.relu_(x)
+        x = torch.relu(x)
         x = self.bn3(x)
         x = self.conv3(x)
-        # x = x.view(-1, 32)
-        x = torch.flatten(x, start_dim=1)
+        x = x.view(-1, 32)
+        # x = torch.flatten(x, start_dim=1)
         x = self.linear(x)
         return x
 
