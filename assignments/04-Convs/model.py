@@ -10,9 +10,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# from torchvision.datasets import CIFAR10
-# from torchvision.transforms import ToTensor
-# from torch.utils.data import DataLoader
+from torchvision.datasets import CIFAR10
+from torchvision.transforms import ToTensor
+from torch.utils.data import DataLoader
 
 
 class LayerNorm(nn.Module):
@@ -359,16 +359,18 @@ class Model(torch.nn.Module):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device)
 
-        # if use_training_warmup := False:
-        #     train_data = CIFAR10(
-        #         root="data/cifar10", train=True, download=False, transform=ToTensor()
-        #     )
-        #     train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
-        #     x, y = next(iter(train_loader))
-        #     x, y = x.to(device), y.to(device)
-        # else:
-        x = torch.rand(128, 3, 32, 32, device=device)
-        y = torch.randint(10, size=[128], device=device)
+        use_training_warmup = True
+
+        if use_training_warmup:
+            train_data = CIFAR10(
+                root="data/cifar10", train=True, download=False, transform=ToTensor()
+            )
+            train_loader = DataLoader(train_data, batch_size=128, shuffle=True)
+            x, y = next(iter(train_loader))
+            x, y = x.to(device), y.to(device)
+        else:
+            x = torch.rand(128, 3, 32, 32, device=device)
+            y = torch.randint(10, size=[128], device=device)
         y_hat = self.model(x)
         loss = criterion(y_hat, y)
         loss.backward()
