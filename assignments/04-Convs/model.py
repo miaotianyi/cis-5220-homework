@@ -295,8 +295,8 @@ class SimpleNet4(nn.Module):
         self.bn2 = nn.BatchNorm2d(num_features=32)
         self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=0)
         self.bn3 = nn.BatchNorm2d(num_features=32)
-        self.conv3 = nn.Conv2d(32, 32, 3, stride=2, padding=0, bias=False)
-        self.linear = nn.Linear(32, num_classes)
+        self.conv3 = nn.Conv2d(32, num_classes, 3, stride=2, padding=0, bias=False)
+        # self.linear = nn.Linear(32, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = x * 2 - 1
@@ -308,7 +308,7 @@ class SimpleNet4(nn.Module):
         x = torch.relu(x)
         x = self.bn3(x)
         x = self.conv3(x)
-        x = x.view(-1, 32)
+        # x = x.view(-1, 32)
         x = torch.flatten(x, start_dim=1)
         # x = self.linear(x)
         return x
