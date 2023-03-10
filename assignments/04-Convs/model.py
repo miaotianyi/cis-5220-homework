@@ -331,7 +331,9 @@ class Model(torch.nn.Module):
     My model for HW4 submission.
     """
 
-    def __init__(self, num_channels: int, num_classes: int) -> None:
+    def __init__(
+        self, num_channels: int, num_classes: int, seed: int = 1897946243
+    ) -> None:
         """
         Initialize a generic image classification model.
 
@@ -342,6 +344,9 @@ class Model(torch.nn.Module):
 
         num_classes : int
             The number of classes for the output classification head.
+
+        seed : int
+            The manual seed before initializing the neural network
         """
         super().__init__()
         # depths = [3, 3, 9, 3]
@@ -359,7 +364,6 @@ class Model(torch.nn.Module):
         batch_size = 200
 
         # seed = torch.randint(0, 2**32, size=[1]).item()
-        seed = 1927859108
         if LOCAL_MODE:
             print(f"{seed=}")
         torch.manual_seed(seed)
