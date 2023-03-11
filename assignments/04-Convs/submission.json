@@ -8,6 +8,7 @@
     ],
     "sources": [
         "ConvNeXt: https://github.com/facebookresearch/ConvNeXt",
-        "RegNet: https://www.d2l.ai/chapter_convolutional-modern/cnn-design.html"
+        "RegNet: https://www.d2l.ai/chapter_convolutional-modern/cnn-design.html",
+        "Effects of random seed: https://arxiv.org/abs/2109.08203"
     ]
 }

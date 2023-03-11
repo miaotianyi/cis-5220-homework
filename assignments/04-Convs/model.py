@@ -326,14 +326,45 @@ class SimpleNet4(nn.Module):
         return x
 
 
+class SimpleNet5(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        # is sequential slower?
+
+        # format: kernel_size, stride, padding
+        self.conv1 = nn.Conv2d(num_channels, 20, 3, stride=2, padding=0)
+        # self.bn2 = nn.BatchNorm2d(num_features=32)
+        self.bn2 = nn.LazyBatchNorm2d()
+        self.conv2 = nn.LazyConv2d(32, kernel_size=3, stride=2, padding=0)
+        # self.conv2 = nn.Conv2d(32, 32, 3, stride=2, padding=0)
+        self.bn3 = nn.LazyBatchNorm2d()
+        # self.bn3 = nn.BatchNorm2d(num_features=32)
+        self.conv3 = nn.LazyConv2d(num_classes, 3, stride=2, padding=0, bias=False)
+        # self.conv3 = nn.Conv2d(32, num_classes, 3, stride=2, padding=0, bias=False)
+        # self.bn_last = nn.BatchNorm1d(num_features=32)
+        # self.linear = nn.Linear(32, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x * 2 - 1
+        x = self.conv1(x)
+        x = torch.relu(x)
+        x = self.bn2(x)
+        x = self.conv2(x)
+        x = torch.max_pool2d(x, kernel_size=3, stride=2, padding=0)
+        x = torch.relu(x)
+        x = self.bn3(x)
+        x = self.conv3(x)
+        # x = x.view(-1, 32)
+        x = torch.flatten(x, start_dim=1)
+        return x
+
+
 class Model(torch.nn.Module):
     """
     My model for HW4 submission.
     """
 
-    def __init__(
-        self, num_channels: int, num_classes: int, seed: int = 1897946243
-    ) -> None:
+    def __init__(self, num_channels: int, num_classes: int) -> None:
         """
         Initialize a generic image classification model.
 
@@ -364,11 +395,11 @@ class Model(torch.nn.Module):
         batch_size = 200
 
         # seed = torch.randint(0, 2**32, size=[1]).item()
-        if LOCAL_MODE:
-            print(f"{seed=}")
-        torch.manual_seed(seed)
+        # if LOCAL_MODE:
+        #     print(f"{seed=}")
+        # torch.manual_seed(seed)
 
-        self.model = SimpleNet4(num_channels, num_classes)
+        self.model = SimpleNet5(num_channels, num_classes)
         # self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
 
         self.num_classes = num_classes
