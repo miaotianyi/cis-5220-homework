@@ -386,7 +386,8 @@ class SimpleNet6(nn.Module):
             # seed = 2351806010
             # 10e-3 lr
             # seed = 152634418
-            seed = 3531307769
+            # seed = 3531307769
+            seed = 4139063165
         torch.manual_seed(seed)
 
         self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
