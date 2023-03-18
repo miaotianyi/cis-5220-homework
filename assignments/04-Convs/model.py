@@ -385,11 +385,12 @@ class SimpleNet6(nn.Module):
             # 6e-3 lr
             # seed = 2351806010
             # 10e-3 lr
-            seed = 152634418
+            # seed = 152634418
+            seed = 3531307769
         torch.manual_seed(seed)
 
-        self.conv1 = nn.Conv2d(num_channels, 10, 3, stride=2, padding=0)
-        self.linear2 = nn.LazyLinear(50, bias=True)
+        self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
+        self.linear2 = nn.LazyLinear(64, bias=True)
         self.linear3 = nn.LazyLinear(num_classes, bias=False)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
