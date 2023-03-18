@@ -17,10 +17,8 @@ from torch.utils.data import DataLoader
 
 
 LOCAL_MODE = False
-if LOCAL_MODE:
-    device = "cpu"
-else:
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cpu"
+# device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class LayerNorm(nn.Module):
@@ -385,7 +383,8 @@ class SimpleNet6(nn.Module):
             # from old submission:
             # seed = 2996007999
             # use kernel_size=4, stride=3
-            seed = 1905384225
+            # seed = 1905384225
+            seed = 2155364026
         torch.manual_seed(seed)
 
         # self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
@@ -402,6 +401,38 @@ class SimpleNet6(nn.Module):
         x = self.linear2(x)
         x = F.gelu(x)
         x = self.linear3(x)
+        return x
+
+
+class MixerNet1(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        if LOCAL_MODE:
+            seed = torch.randint(0, 2**32, size=[1]).item()
+            print(f"{seed = }")
+        else:
+            seed = 42
+        torch.manual_seed(seed)
+
+        self.r = 4  # r is patch size
+
+        self.patch_mix = nn.Linear((32 // self.r) ** 2, 64, bias=True)
+        self.channel_mix = nn.Linear(3 * self.r**2, 64, bias=True)
+        self.head = nn.Linear(64 * 64, num_classes, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # normalize input, faster than Normalize
+        x = x * 2 - 1
+        # ViT patchify: pixel unshuffle -> flatten last 2 dims
+        x = torch.pixel_unshuffle(x, downscale_factor=self.r)  # b, cr^2, h/r, w/r
+        x = torch.flatten(x, start_dim=-2)  # b, channels, patches
+        x = self.patch_mix(x)
+        x = F.gelu(x)
+        x = x.permute(0, 2, 1)  # b, channels, patches
+        x = self.channel_mix(x)
+        x = F.gelu(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.head(x)
         return x
 
 
@@ -426,24 +457,9 @@ class Model(torch.nn.Module):
             The manual seed before initializing the neural network
         """
         super().__init__()
-        # depths = [3, 3, 9, 3]
-        # dims = [48, 96, 192, 384]
-
-        # self.model = ConvNeXt(
-        #     in_chans=num_channels,
-        #     num_classes=num_classes,
-        #     depths=depths,
-        #     dims=dims,
-        # )
-        # self.model = SimpleNet(num_channels, num_classes, [32] * 4)
         use_training_warmup = False
         use_random_warmup = True
         batch_size = 200
-
-        # seed = torch.randint(0, 2**32, size=[1]).item()
-        # if LOCAL_MODE:
-        #     print(f"{seed=}")
-        # torch.manual_seed(seed)
 
         self.model = SimpleNet6(num_channels, num_classes)
         # self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
