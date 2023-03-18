@@ -11,7 +11,7 @@ class CONFIG:
 
     optimizer_factory: Callable[
         [nn.Module], torch.optim.Optimizer
-    ] = lambda model: torch.optim.Adam(model.parameters(), lr=5e-3)
+    ] = lambda model: torch.optim.Adam(model.parameters(), lr=10e-3)
     # torch.optim.SGD(model.parameters(), lr=0.1)
     # torch.optim.Adam(model.parameters(), lr=5e-3)
 
