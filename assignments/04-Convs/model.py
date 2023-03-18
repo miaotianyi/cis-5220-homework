@@ -341,7 +341,7 @@ class SimpleNet5(nn.Module):
             seed = 2996007999
         torch.manual_seed(seed)
 
-        self.conv1 = nn.Conv2d(num_channels, 15, 3, stride=2, padding=0)
+        self.conv1 = nn.Conv2d(num_channels, 10, 3, stride=2, padding=0)
         # self.conv1 = nn.LazyConv2d(16, 3, stride=2, padding=0)
         # self.bn2 = nn.BatchNorm2d(num_features=32)
         self.bn2 = nn.LazyBatchNorm2d()
@@ -366,6 +366,38 @@ class SimpleNet5(nn.Module):
         x = self.conv3(x)
         # x = x.view(-1, 32)
         x = torch.flatten(x, start_dim=1)
+        return x
+
+
+class SimpleNet6(nn.Module):
+    def __init__(self, num_channels, num_classes):
+        super().__init__()
+        # is sequential slower?
+
+        # format: kernel_size, stride, padding
+        # 15/25 seems faster, 16/32 guarantees convergence?
+        if LOCAL_MODE:
+            seed = torch.randint(0, 2**32, size=[1]).item()
+            print(f"{seed = }")
+        else:
+            # seed = 3311891838
+            # seed = 2996007999
+            seed = 1543620625
+        torch.manual_seed(seed)
+
+        self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
+        self.linear2 = nn.LazyLinear(64, bias=True)
+        self.linear3 = nn.LazyLinear(num_classes, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x * 2 - 1
+        x = self.conv1(x)
+        x = torch.max_pool2d(x, kernel_size=2, stride=2, padding=0)
+        x = F.gelu(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.linear2(x)
+        x = torch.relu(x)
+        x = self.linear3(x)
         return x
 
 
@@ -409,7 +441,7 @@ class Model(torch.nn.Module):
         #     print(f"{seed=}")
         # torch.manual_seed(seed)
 
-        self.model = SimpleNet5(num_channels, num_classes)
+        self.model = SimpleNet6(num_channels, num_classes)
         # self.model = torch.jit.trace(model, torch.rand(batch_size, 3, 32, 32))
 
         self.num_classes = num_classes
