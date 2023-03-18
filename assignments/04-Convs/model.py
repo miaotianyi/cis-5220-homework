@@ -382,7 +382,8 @@ class SimpleNet6(nn.Module):
         else:
             # seed = 3311891838
             # seed = 2996007999
-            seed = 1543620625
+            # seed = 1543620625
+            seed = 2213136285
         torch.manual_seed(seed)
 
         self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
@@ -482,7 +483,7 @@ class Model(torch.nn.Module):
         if LOCAL_MODE:
             toc = time.time()
             print(f"Pretraining time: {toc - tic:.2f} seconds")
-            print(sum(p.numel() for p in self.model.parameters()))
+            print("Parameter count:", sum(p.numel() for p in self.model.parameters()))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
