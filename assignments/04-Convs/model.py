@@ -380,17 +380,16 @@ class SimpleNet6(nn.Module):
             seed = torch.randint(0, 2**32, size=[1]).item()
             print(f"{seed = }")
         else:
-            # 5e-3 lr
-            # seed = 1282682033
-            # 6e-3 lr
-            # seed = 2351806010
-            # 10e-3 lr
-            # seed = 152634418
             # seed = 3531307769
-            seed = 4139063165
+            # seed = 4139063165
+            # from old submission:
+            # seed = 2996007999
+            # use kernel_size=4, stride=3
+            seed = 1905384225
         torch.manual_seed(seed)
 
-        self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
+        # self.conv1 = nn.Conv2d(num_channels, 16, 3, stride=2, padding=0)
+        self.conv1 = nn.Conv2d(num_channels, 16, 4, stride=2, padding=0)
         self.linear2 = nn.LazyLinear(64, bias=True)
         self.linear3 = nn.LazyLinear(num_classes, bias=False)
 
