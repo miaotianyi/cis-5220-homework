@@ -2,11 +2,17 @@
     "assignment_name": "RL",
     "contributors": [
         {
-            "name": "Change this to your name",
-            "pennkey": "MyPennKey"
+            "name": "Tianyi Miao",
+            "pennkey": "mtianyi"
+        },
+        {
+            "name": "Sam Dauncey",
+            "pennkey": "sdauncey"
         }
     ],
     "sources": [
-        "Don't forget to list your sources/attribution here!"
+        "DQN: https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html",
+        "positional encoding: https://arxiv.org/abs/1706.03762",
+        "Rainbow DQN: https://github.com/Curt-Park/rainbow-is-all-you-need"
     ]
 }
