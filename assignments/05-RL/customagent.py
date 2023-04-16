@@ -938,6 +938,16 @@ class MulticlassMLPAgent(nn.Module):
         return estimated_value, action_log_prob, entropy
 
 
+def decreasing_exponential(x, starts_at, reaches, when_x):
+    """
+    A decreasing exponential function that starts at y0=f(0),
+    reaches y1=f(x1) when x=x1.
+    """
+    k = np.log(reaches / starts_at) / when_x
+    y = starts_at * np.exp(k * x)
+    return y
+
+
 class PPOAgent:
     """
     My own agent for LunarLander-v2 reinforcement learning
@@ -969,7 +979,7 @@ class PPOAgent:
         self.ppo_epochs = 6
         self.vf_coef = 0.001
         # self.ent_coef = 1.0
-        self.vf_clip = 10.0
+        # self.vf_clip = 50.0
         self.ppo_clip = 0.1
 
         self.batch_size = 64
@@ -997,6 +1007,11 @@ class PPOAgent:
 
     def ent_coef(self):
         return 1.0 * np.exp(-self.episode_count / 20)
+
+    def vf_clip(self):
+        # smaller change as the training is close to an end
+        return 10.0
+        # return decreasing_exponential(self.episode_count, starts_at=15., reaches=5., when_x=100) + 5.
 
     def reset_trajectory_buffer(self):
         # cache current state/action
@@ -1068,7 +1083,7 @@ class PPOAgent:
                     batch_size=self.batch_size,
                     vf_coef=self.vf_coef,
                     ent_coef=self.ent_coef(),
-                    vf_clip=self.vf_clip,
+                    vf_clip=self.vf_clip(),
                     ppo_clip=self.ppo_clip,
                 )
                 self.reset_trajectory_buffer()
@@ -1080,11 +1095,12 @@ class Agent(PPOAgent):
 
 
 def main():
-    env = gym.make("LunarLander-v2", render_mode="human")
-    observation, info = env.reset(seed=42)
-    print(observation)
-    prep = Preprocessor(env.observation_space)
-    print(prep(observation))
+    print(decreasing_exponential(10, 1, 1 / 3, 10))
+    # env = gym.make("LunarLander-v2", render_mode="human")
+    # observation, info = env.reset(seed=42)
+    # print(observation)
+    # prep = Preprocessor(env.observation_space)
+    # print(prep(observation))
 
 
 if __name__ == "__main__":
