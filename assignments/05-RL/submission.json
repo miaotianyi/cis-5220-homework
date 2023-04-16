@@ -13,6 +13,8 @@
     "sources": [
         "DQN: https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html",
         "positional encoding: https://arxiv.org/abs/1706.03762",
-        "Rainbow DQN: https://github.com/Curt-Park/rainbow-is-all-you-need"
+        "Rainbow DQN: https://github.com/Curt-Park/rainbow-is-all-you-need",
+        "PPO: https://nn.labml.ai/rl/ppo/gae.html",
+        "PPO: https://spinningup.openai.com/en/latest/algorithms/ppo.html"
     ]
 }
