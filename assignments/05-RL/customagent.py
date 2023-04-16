@@ -347,7 +347,7 @@ class Preprocessor:
         self.original_num_features = observation_space.shape[0]
         self.h = 1
         # observation_space.high and low give wrong
-        self.high = np.array([1.5, 1.5, 5., 5., 3.14, 5])
+        self.high = np.array([1.5, 1.5, 5.0, 5.0, 3.14, 5])
         self.low = -self.high
         self.range = self.high * 2
 
@@ -1067,7 +1067,7 @@ class PPOAgent:
                     vf_coef=self.vf_coef,
                     ent_coef=self.ent_coef,
                     vf_clip=self.vf_clip,
-                    ppo_clip=self.ppo_clip
+                    ppo_clip=self.ppo_clip,
                 )
                 self.reset_trajectory_buffer()
                 self.old_agent.load_state_dict(self.agent.state_dict())
