@@ -345,7 +345,7 @@ class Preprocessor:
             The observation space for LunarLander-v2
         """
         self.original_num_features = observation_space.shape[0]
-        self.h = 1
+        self.h = 8
         # observation_space.high and low give wrong
         self.high = np.array([1.5, 1.5, 5.0, 5.0, 3.14, 5])
         self.low = -self.high
@@ -356,12 +356,11 @@ class Preprocessor:
         obs = np.array(observation)
         # obs[:6] = obs[:6] / self.high
         return obs
-        # x = (observation[:6] - self.low) / self.range
-        # w = np.geomspace(0.99 * math.tau, 1e5 * math.tau, num=self.h // 2)
-        # x = x[..., None] * w
-        # return np.concatenate(
-        #     [np.sin(x).flatten(), np.cos(x).flatten(), observation[6:]]
-        # )
+        x = observation[:6] / self.high
+        w = np.geomspace(math.tau / 0.001, math.tau / 2.1, num=self.h // 2)
+        x = x[..., None] * w
+        x = np.concatenate([np.sin(x).flatten(), np.cos(x).flatten(), observation[6:]])
+        return x
 
     @property
     def n_features(self):
@@ -965,15 +964,15 @@ class PPOAgent:
         self.n_actions = action_space.n
 
         # hyperparameters
-        self.gamma = 0.99
+        self.gamma = 0.999
         self.gae_lambda = 0.9
-        self.ppo_epochs = 4
-        self.vf_coef = 0.1
+        self.ppo_epochs = 6
+        self.vf_coef = 0.001
         self.ent_coef = 1.0
         self.vf_clip = 10.0
-        self.ppo_clip = 0.5
+        self.ppo_clip = 0.1
 
-        self.batch_size = 32
+        self.batch_size = 64
         self.episode_epochs = 5  # number of exploratory episodes before PPO update
 
         # network architecture
