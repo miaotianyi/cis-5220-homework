@@ -968,7 +968,7 @@ class PPOAgent:
         self.gae_lambda = 0.9
         self.ppo_epochs = 6
         self.vf_coef = 0.001
-        self.ent_coef = 1.0
+        # self.ent_coef = 1.0
         self.vf_clip = 10.0
         self.ppo_clip = 0.1
 
@@ -976,7 +976,7 @@ class PPOAgent:
         self.episode_epochs = 5  # number of exploratory episodes before PPO update
 
         # network architecture
-        self.h = 64
+        self.h = 128
         self.agent = MulticlassMLPAgent(self.n_observations, self.n_actions, d=self.h)
         # old agent has the same architecture
         self.old_agent = MulticlassMLPAgent(
@@ -994,6 +994,9 @@ class PPOAgent:
 
         self.taus = []
         self.reset_trajectory_buffer()
+
+    def ent_coef(self):
+        return 1.0 * np.exp(-self.episode_count / 20)
 
     def reset_trajectory_buffer(self):
         # cache current state/action
@@ -1064,7 +1067,7 @@ class PPOAgent:
                     ppo_epochs=self.ppo_epochs,
                     batch_size=self.batch_size,
                     vf_coef=self.vf_coef,
-                    ent_coef=self.ent_coef,
+                    ent_coef=self.ent_coef(),
                     vf_clip=self.vf_clip,
                     ppo_clip=self.ppo_clip,
                 )
