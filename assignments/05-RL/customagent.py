@@ -968,7 +968,7 @@ class FrameBuffer:
             self.buffer[self.ptr] = frame
         self.ptr = (self.ptr + 1) % self.n_frames
         return np.concatenate(
-            [self.buffer[self.ptr :].flatten(), self.buffer[: self.ptr].flatten()]
+            [self.buffer[self.ptr:].flatten(), self.buffer[:self.ptr].flatten()]
         )
 
 
