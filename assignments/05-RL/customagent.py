@@ -904,6 +904,8 @@ class MulticlassMLPAgent(nn.Module):
             nn.ReLU(),
             nn.Linear(d, d),
             nn.ReLU(),
+            # nn.Linear(d, d),
+            # nn.ReLU(),
         )
         self.actor = nn.Sequential(
             nn.Linear(d, d),
@@ -1091,7 +1093,11 @@ class PPOAgent:
 
 
 class Agent(PPOAgent):
-    pass
+    """
+    This is the submission agent class.
+
+    Currently, it inherits from the PPO agent.
+    """
 
 
 def main():
