@@ -967,8 +967,11 @@ class FrameBuffer:
         else:
             self.buffer[self.ptr] = frame
         self.ptr = (self.ptr + 1) % self.n_frames
+        # colon causes a weird error in server-side linting.
+        slice_1 = slice(self.ptr, self.n_frames)
+        slice_2 = slice(None, self.ptr)
         return np.concatenate(
-            [self.buffer[self.ptr:].flatten(), self.buffer[:self.ptr].flatten()]
+            (self.buffer[slice_1].flatten(), self.buffer[slice_2].flatten())
         )
 
 
@@ -992,7 +995,7 @@ class PPOAgent:
         self.action_space = action_space
         self.observation_space = observation_space
         self.prep = Preprocessor(observation_space=observation_space)
-        self.obs_buffer = FrameBuffer(n_frames=3)
+        self.obs_buffer = FrameBuffer(n_frames=2)
 
         # observation size
         self.n_observations = self.prep.n_features * self.obs_buffer.n_frames
