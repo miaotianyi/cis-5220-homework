@@ -950,6 +950,28 @@ def decreasing_exponential(x, starts_at, reaches, when_x):
     return y
 
 
+class FrameBuffer:
+    """
+    Use a circular buffer numpy array
+    to store the n_frames latest frames.
+    """
+
+    def __init__(self, n_frames):
+        self.n_frames = int(n_frames)
+        self.buffer = None
+        self.ptr = 0
+
+    def step(self, frame):
+        if self.buffer is None:
+            self.buffer = np.stack([frame for _ in range(self.n_frames)])
+        else:
+            self.buffer[self.ptr] = frame
+        self.ptr = (self.ptr + 1) % self.n_frames
+        return np.concatenate(
+            [self.buffer[self.ptr :].flatten(), self.buffer[: self.ptr].flatten()]
+        )
+
+
 class PPOAgent:
     """
     My own agent for LunarLander-v2 reinforcement learning
@@ -970,9 +992,10 @@ class PPOAgent:
         self.action_space = action_space
         self.observation_space = observation_space
         self.prep = Preprocessor(observation_space=observation_space)
+        self.obs_buffer = FrameBuffer(n_frames=3)
 
         # observation size
-        self.n_observations = self.prep.n_features
+        self.n_observations = self.prep.n_features * self.obs_buffer.n_frames
         self.n_actions = action_space.n
 
         # hyperparameters
@@ -1042,6 +1065,7 @@ class PPOAgent:
         """
         self.step_count += 1
         obs = self.prep(observation)
+        obs = self.obs_buffer.step(obs)
         obs = torch.tensor(obs, dtype=torch.float32)
         with torch.no_grad(), evaluating(self.old_agent):
             action = self.old_agent.sample(obs).item()
@@ -1101,7 +1125,11 @@ class Agent(PPOAgent):
 
 
 def main():
-    print(decreasing_exponential(10, 1, 1 / 3, 10))
+    a = FrameBuffer(n_frames=3)
+    array = np.arange(100).reshape(25, 4)
+    for row in array:
+        print(a.step(row))
+    # print(decreasing_exponential(10, 1, 1 / 3, 10))
     # env = gym.make("LunarLander-v2", render_mode="human")
     # observation, info = env.reset(seed=42)
     # print(observation)
